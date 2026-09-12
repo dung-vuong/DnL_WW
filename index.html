@@ -1250,45 +1250,45 @@ document.getElementById('musicToggle').addEventListener('click', () => {
 
 /* ============== Add to calendar (.ics download) ============== */
 document.getElementById('addToCalendarBtn').addEventListener('click', () => {
-  const ics = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//DungVuong-LinhMai-Wedding//VN',
-    'CALSCALE:GREGORIAN',
-    'BEGIN:VEVENT',
-    'UID:dam-cuoi-dung-linh-2027@wedding',
-    'SUMMARY:Đám cưới Dũng Vương & Linh Mai',
-    'DTSTART:20270124T010000Z',
-    'DTEND:20270124T060000Z',
-    'LOCATION:Pearl Bay Restaurant\\, 43635 Boscell Rd\\, Fremont\\, CA 94538',
-    'DESCRIPTION:Giờ Đón Khách 5:00 chiều\\, Lễ Thành Hôn 6:00 chiều tại Pearl Bay Restaurant',
-    'END:VEVENT',
-    'END:VCALENDAR'
-  ].join('\r\n');
-
-  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-
-  // iOS Safari and some in-app browsers (Messenger/Zalo/Facebook) don't
-  // reliably support the <a download> attribute for blob URLs — the click
-  // is silently ignored. That's the most common cause of "add to calendar
-  // does nothing" once a site is deployed and opened on a phone. Detect
-  // that case and open the .ics directly instead, which triggers the
-  // native "Add to Calendar" sheet.
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
   if (isIOS) {
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//DungVuong-LinhMai-Wedding//VN',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      'UID:dam-cuoi-dung-linh-2027@wedding',
+      'SUMMARY:Đám cưới Dũng Vương & Linh Mai',
+      'DTSTART:20270124T010000Z',
+      'DTEND:20270124T060000Z',
+      'LOCATION:Pearl Bay Restaurant\\, 43635 Boscell Rd\\, Fremont\\, CA 94538',
+      'DESCRIPTION:Giờ Đón Khách 5:00 chiều\\, Lễ Thành Hôn 6:00 chiều tại Pearl Bay Restaurant',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    // iOS Safari doesn't reliably support the <a download> attribute for
+    // blob URLs, so open the .ics directly instead — this triggers the
+    // native "Add to Calendar" sheet.
     const reader = new FileReader();
     reader.onload = () => { window.location.href = reader.result; };
     reader.readAsDataURL(blob);
   } else {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dam-cuoi-dung-linh.ics';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    // On Android/desktop, a downloaded .ics file lands quietly in
+    // Downloads with no visible confirmation, which reads as "nothing
+    // happened." A Google Calendar link opens immediately and visibly
+    // (in the Calendar app if installed, or calendar.google.com), which
+    // is far more reliable and obvious on these platforms.
+    const params = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: 'Đám cưới Dũng Vương & Linh Mai',
+      dates: '20270124T010000Z/20270124T060000Z',
+      details: 'Giờ Đón Khách 5:00 chiều, Lễ Thành Hôn 6:00 chiều tại Pearl Bay Restaurant',
+      location: 'Pearl Bay Restaurant, 43635 Boscell Rd, Fremont, CA 94538'
+    });
+    window.open('https://calendar.google.com/calendar/render?' + params.toString(), '_blank');
   }
 });
 
