@@ -831,7 +831,6 @@
       <div class="cal-grid" id="calGrid"></div>
     </div>
 
-    <button class="calendar-btn" id="addToCalendarBtn" data-i18n="btn_add_calendar">+ Thêm vào lịch</button>
 
     <div class="countdown" id="countdown">
       <div class="cell"><div class="num" id="cd-days">00</div><div class="label" data-i18n="cd_days">NGÀY</div></div>
@@ -961,7 +960,7 @@ const translations = {
     footer_note: "Sự hiện diện của quý khách là niềm vinh hạnh của gia đình chúng tôi",
     footer_thanks: "Cảm ơn quý khách đã dành thời gian ghé thăm và cùng chúng tôi đón chờ ngày trọng đại này.",
     topbar_prefix: "Đám cưới của chúng tôi", topbar_days: "còn", topbar_days_unit: "ngày",
-    btn_directions: "Chỉ đường", btn_add_calendar: "+ Thêm vào lịch",
+    btn_directions: "Chỉ đường", btn_add_calendar: "+ Thêm vào lịch", btn_add_calendar_other: "Dùng app lịch khác?",
     slide_caps: ["Ảnh cưới sẽ sớm cập nhật", "Khoảnh khắc của chúng tôi", "Hẹn gặp quý khách!"]
   },
   zh: {
@@ -998,7 +997,7 @@ const translations = {
     footer_note: "您的光临是我们全家最大的荣幸",
     footer_thanks: "感谢您抽出时间访问，与我们一同期待这个重要的日子。",
     topbar_prefix: "我们的婚礼", topbar_days: "还有", topbar_days_unit: "天",
-    btn_directions: "导航前往", btn_add_calendar: "+ 添加到日历",
+    btn_directions: "导航前往", btn_add_calendar: "+ 添加到日历", btn_add_calendar_other: "使用其他日历应用？",
     slide_caps: ["婚纱照即将呈现", "我们的美好时刻", "期待与您相见！"]
   },
   en: {
@@ -1035,7 +1034,7 @@ const translations = {
     footer_note: "Your presence is the greatest gift of all to our families",
     footer_thanks: "Thank you for taking the time to visit and to look forward to our big day with us.",
     topbar_prefix: "Our wedding", topbar_days: "in", topbar_days_unit: "days",
-    btn_directions: "Get directions", btn_add_calendar: "+ Add to calendar",
+    btn_directions: "Get directions", btn_add_calendar: "+ Add to calendar", btn_add_calendar_other: "Use a different calendar app?",
     slide_caps: ["Photos coming soon", "Our favorite moments", "Can't wait to see you!"]
   }
 };
@@ -1245,50 +1244,6 @@ document.getElementById('musicToggle').addEventListener('click', () => {
   } else {
     bgm.pause();
     document.getElementById('musicToggle').classList.remove('playing');
-  }
-});
-
-/* ============== Add to calendar (.ics download) ============== */
-document.getElementById('addToCalendarBtn').addEventListener('click', () => {
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-  if (isIOS) {
-    const ics = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//DungVuong-LinhMai-Wedding//VN',
-      'CALSCALE:GREGORIAN',
-      'BEGIN:VEVENT',
-      'UID:dam-cuoi-dung-linh-2027@wedding',
-      'SUMMARY:Đám cưới Dũng Vương & Linh Mai',
-      'DTSTART:20270124T010000Z',
-      'DTEND:20270124T060000Z',
-      'LOCATION:Pearl Bay Restaurant\\, 43635 Boscell Rd\\, Fremont\\, CA 94538',
-      'DESCRIPTION:Giờ Đón Khách 5:00 chiều\\, Lễ Thành Hôn 6:00 chiều tại Pearl Bay Restaurant',
-      'END:VEVENT',
-      'END:VCALENDAR'
-    ].join('\r\n');
-    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-    // iOS Safari doesn't reliably support the <a download> attribute for
-    // blob URLs, so open the .ics directly instead — this triggers the
-    // native "Add to Calendar" sheet.
-    const reader = new FileReader();
-    reader.onload = () => { window.location.href = reader.result; };
-    reader.readAsDataURL(blob);
-  } else {
-    // On Android/desktop, a downloaded .ics file lands quietly in
-    // Downloads with no visible confirmation, which reads as "nothing
-    // happened." A Google Calendar link opens immediately and visibly
-    // (in the Calendar app if installed, or calendar.google.com), which
-    // is far more reliable and obvious on these platforms.
-    const params = new URLSearchParams({
-      action: 'TEMPLATE',
-      text: 'Đám cưới Dũng Vương & Linh Mai',
-      dates: '20270124T010000Z/20270124T060000Z',
-      details: 'Giờ Đón Khách 5:00 chiều, Lễ Thành Hôn 6:00 chiều tại Pearl Bay Restaurant',
-      location: 'Pearl Bay Restaurant, 43635 Boscell Rd, Fremont, CA 94538'
-    });
-    window.open('https://calendar.google.com/calendar/render?' + params.toString(), '_blank');
   }
 });
 
